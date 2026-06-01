@@ -8,7 +8,7 @@
 }
 
 :root {
-    --dark-teal:      #136e84;
+    --dark-teal:  #136e84;
     --green-deep: #163F22;
     --green-mid:  #1b98b3;
     --green-pale: #EAF4EC;
@@ -17,8 +17,8 @@
     --gold-dark:  #8F7020;
     --white:      #FFFFFF;
     --off-white:  #F6F8F5;
-    --text-dark:  #162019;
-    --text-mid:   #FFFFFFE7;
+    --text-dark:  #0a3c4b;
+    --text-mid:   #136e84;
     --border:     #C8DACC;
     --card-bg:    #FFFFFF;
 
@@ -26,16 +26,24 @@
     --serif:   'Libre Baskerville', serif;
 }
 
-/*  BASE */
-html,
-body {
+/* BASE — allow scrolling on mobile, lock on desktop */
+html, body {
     width: 100%;
     height: 100%;
-    overflow: hidden;
     background: var(--off-white);
 }
 
-/* Hide scrollbar — keep scroll functionality */
+/* Desktop: no scroll — slides fill viewport exactly */
+@media (min-width: 721px) {
+    html, body {
+        overflow: hidden;
+    }
+}
+
+/* Mobile: body scroll locked — each slide's content area scrolls instead */
+/* (overflow: hidden set inside the slide-system mobile block below) */
+
+/* Hide scrollbar on .body — keep scroll functionality */
 .body::-webkit-scrollbar { display: none; }
 .body { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -51,37 +59,104 @@ body::before {
     background-size: 300px 200px;
 }
 
-/*  SLIDES SYSTEM */
-.slides {
-    width: 100%;
-    height: 100vh;
-    position: relative;
+/* ─── SLIDES SYSTEM ─── */
+
+/* Desktop: full-viewport slide deck */
+@media (min-width: 721px) {
+    .slides {
+        width: 100%;
+        height: 100vh;
+        position: relative;
+    }
+
+    .slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .4s ease, transform .4s ease;
+        transform: translateY(18px);
+        z-index: 1;
+    }
+
+    .slide.active {
+        opacity: 1;
+        pointer-events: all;
+        transform: none;
+    }
+
+    .slide.exit {
+        opacity: 0;
+        transform: translateY(-18px);
+    }
 }
 
-.slide {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .4s ease, transform .4s ease;
-    transform: translateY(18px);
-    z-index: 1;
+/* Mobile: slides fill the viewport; header+footer stick, content scrolls */
+@media (max-width: 720px) {
+    html, body {
+        overflow: hidden; /* prevent body scroll — each slide handles its own */
+        height: 100%;
+    }
+
+    .slides {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .slide {
+        display: none;
+        flex-direction: column;
+        position: fixed;
+        inset: 0;
+    }
+
+    .slide.active {
+        display: flex;
+        animation: mobileFadeIn .35s ease forwards;
+    }
+
+    @keyframes mobileFadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: none; }
+    }
+
+    /* Header stays pinned at top */
+    .hbar {
+        flex-shrink: 0;
+        position: relative; /* already in flow, fixed slide handles pinning */
+        z-index: 10;
+    }
+
+    .gold-bar {
+        flex-shrink: 0;
+    }
+
+    /* Content area scrolls between the sticky header and footer */
+    .body {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Lab slide (slide 6) inner content scrolls */
+    .lab-slide {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Footer stays pinned at bottom */
+    .fbar {
+        flex-shrink: 0;
+        position: relative;
+        z-index: 10;
+    }
 }
 
-.slide.active {
-    opacity: 1;
-    pointer-events: all;
-    transform: none;
-}
-
-.slide.exit {
-    opacity: 0;
-    transform: translateY(-18px);
-}
-
-/* HEADER */
+/* ─── HEADER ─── */
 .hbar {
     background: var(--dark-teal);
     display: flex;
@@ -97,14 +172,11 @@ body::before {
 .hbar::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     height: 3px;
     background: var(--gold);
 }
 
-/* Slide 1 header modifier */
 .first-slide {
     border-bottom: 3px solid var(--gold);
 }
@@ -147,7 +219,7 @@ body::before {
     font-family: var(--heading);
     font-size: .55rem;
     font-weight: 500;
-    color: rgba(201, 161, 58, .8);
+    color: rgba(201,161,58,.8);
     letter-spacing: .1em;
     text-transform: uppercase;
     display: block;
@@ -158,7 +230,7 @@ body::before {
     font-family: var(--heading);
     font-size: .6rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, .55);
+    color: rgba(255,255,255,.55);
     letter-spacing: .13em;
     text-transform: uppercase;
 }
@@ -169,7 +241,7 @@ body::before {
     flex-shrink: 0;
 }
 
-/*  FOOTER / NAV */
+/* ─── FOOTER / NAV ─── */
 .fbar {
     background: var(--white);
     border-top: 2px solid var(--dark-teal);
@@ -187,7 +259,7 @@ body::before {
     font-family: var(--heading);
     font-size: .58rem;
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--dark-teal);
     letter-spacing: .09em;
     text-transform: uppercase;
 }
@@ -210,6 +282,9 @@ body::before {
     border-radius: 2px;
     letter-spacing: .04em;
     transition: background .18s;
+    /* Minimum tap target */
+    min-height: 36px;
+    min-width: 64px;
 }
 
 .nav button:hover:not(:disabled) {
@@ -244,7 +319,7 @@ body::before {
     transition: width .4s ease;
 }
 
-/* SLIDE BODY */
+/* ─── SLIDE BODY ─── */
 .body {
     flex: 1;
     overflow-y: auto;
@@ -261,7 +336,7 @@ body::before {
     text-align: center;
 }
 
-/*  TYPOGRAPHY  (shared across all slides) */
+/* ─── TYPOGRAPHY ─── */
 .eyebrow {
     font-family: var(--heading);
     font-size: .9rem;
@@ -275,7 +350,8 @@ body::before {
 h1 {
     font-family: var(--heading);
     font-weight: 900;
-    font-size: clamp(5rem, 4.5vw, 3.8rem);
+    /* FIX: was clamp(5rem, 4.5vw, 3.8rem) — min was bigger than max */
+    font-size: clamp(2.2rem, 8vw, 4.5rem);
     color: var(--white);
     line-height: 1.06;
     margin-bottom: 16px;
@@ -320,11 +396,11 @@ p.lead {
 p.body-sm {
     font-family: var(--serif);
     font-size: .83rem;
-    color: var(--text-mid);
+    color: var(--text-dark);
     line-height: 1.6;
 }
 
-/* SLIDES 1 & 9  —  TITLE / CLOSING */
+/* ─── SLIDES 1 & 9  —  TITLE / CLOSING ─── */
 .closing {
     background: var(--dark-teal);
     flex: 1;
@@ -335,46 +411,44 @@ p.body-sm {
     text-align: center;
     padding: 4vh 8vw;
     position: relative;
-    overflow: hidden;
+    /* FIX: was overflow:hidden — clips content on mobile */
+    overflow: visible;
 }
 
 .closing::before {
     content: '';
     position: absolute;
-    left: 50%;
-    top: 50%;
+    left: 50%; top: 50%;
     transform: translate(-50%, -50%);
-    width: 600px;
-    height: 600px;
+    width: 600px; height: 600px;
     border-radius: 50%;
-    border: 1px solid rgba(201, 161, 58, .08);
+    border: 1px solid rgba(201,161,58,.08);
     pointer-events: none;
 }
 
 .closing::after {
     content: '';
     position: absolute;
-    left: 50%;
-    top: 50%;
+    left: 50%; top: 50%;
     transform: translate(-50%, -50%);
-    width: 420px;
-    height: 420px;
+    width: 420px; height: 420px;
     border-radius: 50%;
-    border: 1px solid rgba(201, 161, 58, .12);
+    border: 1px solid rgba(201,161,58,.12);
     pointer-events: none;
 }
 
 .closing-inner {
     position: relative;
     z-index: 2;
+    width: 100%;
 }
 
 .t-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(201, 161, 58, .12);
-    border: 1px solid rgba(201, 161, 58, .3);
+    background: rgba(201,161,58,.12);
+    border: 1px solid rgba(201,161,58,.3);
     border-radius: 2px;
     padding: 5px 12px;
     margin-bottom: 18px;
@@ -389,8 +463,8 @@ p.body-sm {
 .t-pill {
     display: inline-block;
     margin: 3px;
-    background: rgba(201, 161, 58, .14);
-    border: 1px solid rgba(201, 161, 58, .3);
+    background: rgba(201,161,58,.14);
+    border: 1px solid rgba(201,161,58,.3);
     border-radius: 20px;
     font-family: var(--heading);
     font-size: .6rem;
@@ -400,13 +474,25 @@ p.body-sm {
     padding: 4px 12px;
 }
 
+.main-heading {
+    font-family: var(--heading);
+    font-weight: 900;
+    font-size: clamp(2.2rem, 8vw, 4.5rem);
+    color: var(--white);
+    line-height: 1.06;
+    margin-bottom: 16px;
+}
+
+.main-heading em {
+    font-style: normal;
+    color: var(--gold);
+}
+
 .v-bar {
     position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
+    right: 0; top: 0; bottom: 0;
     width: 4px;
-    background: linear-gradient(180deg, var(--gold) 0%, rgba(201, 161, 58, .2) 100%);
+    background: linear-gradient(180deg, var(--gold) 0%, rgba(201,161,58,.2) 100%);
 }
 
 .c-headline {
@@ -423,11 +509,12 @@ p.body-sm {
     color: var(--gold);
 }
 
+/* FIX: c-sub was same colour as background (#136e84 on #136e84) */
 .c-sub {
     font-family: var(--serif);
     font-style: italic;
     font-size: clamp(.85rem, 1.4vw, 1rem);
-    color: var(--text-mid);
+    color: rgba(255, 255, 255, 0.75);
     max-width: 480px;
     line-height: 1.7;
     margin: 0 auto 24px;
@@ -442,13 +529,13 @@ p.body-sm {
     font-family: var(--heading);
     font-size: .58rem;
     font-weight: 700;
-    color: rgba(201, 161, 58, .6);
+    color: rgba(201,161,58,.6);
     letter-spacing: .18em;
     text-transform: uppercase;
     margin-top: 4px;
 }
 
-/*  SLIDE 2  —  ABOUT  (two-col, outcomes list, stat box) */
+/* ─── SLIDE 2  —  ABOUT ─── */
 .two-col {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
@@ -505,7 +592,7 @@ p.body-sm {
 }
 
 .stat-item {
-    border-bottom: 1px solid rgba(255, 255, 255, .1);
+    border-bottom: 1px solid rgba(255,255,255,.1);
     padding-bottom: 12px;
 }
 
@@ -529,7 +616,7 @@ p.body-sm {
     margin-top: 2px;
 }
 
-/* SLIDE 3  —  COURSES */
+/* ─── SLIDE 3  —  COURSES ─── */
 .clist {
     display: flex;
     flex-direction: column;
@@ -577,12 +664,12 @@ p.body-sm {
 .cdesc {
     font-family: var(--serif);
     font-size: .75rem;
-    color: var(--text-muted);
+    color: var(--gold-dark);
     margin-top: 2px;
     line-height: 1.5;
 }
 
-/* SLIDE 5  —  CAREERS */
+/* ─── SLIDE 5  —  CAREERS ─── */
 .career-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -613,20 +700,15 @@ p.body-sm {
     grid-template-columns: 1fr;
 }
 
-/* CARDS  (shared — slides 5, 7, 8) */
+/* ─── CARDS (slides 5, 7, 8) ─── */
 .card-grid {
     display: grid;
     gap: 12px;
     width: 100%;
 }
 
-.g2 {
-    grid-template-columns: repeat(2, 1fr);
-}
-
-.g3 {
-    grid-template-columns: repeat(3, 1fr);
-}
+.g2 { grid-template-columns: repeat(2, 1fr); }
+.g3 { grid-template-columns: repeat(3, 1fr); }
 
 .card {
     background: var(--card-bg);
@@ -642,20 +724,20 @@ p.body-sm {
 
 .card:hover {
     border-top-color: var(--gold);
-    box-shadow: 0 3px 16px rgba(30, 92, 48, .1);
+    box-shadow: 0 3px 16px rgba(30,92,48,.1);
 }
 
 .card-tag {
     font-family: var(--heading);
     font-size: .6rem;
     font-weight: 800;
-    color: var(--text-muted);
+    color: var(--text-dark);
     letter-spacing: .15em;
     text-transform: uppercase;
     margin-bottom: 5px;
 }
 
-/* PILLS  (slides 5, 9) */
+/* ─── PILLS (slides 5, 9) ─── */
 .pills {
     display: flex;
     flex-wrap: wrap;
@@ -681,7 +763,7 @@ p.body-sm {
     color: var(--gold-dark);
 }
 
-/* SLIDE 6  —  TECH LAB PHOTO */
+/* ─── SLIDE 6  —  TECH LAB PHOTO ─── */
 .lab-slide {
     flex: 1;
     display: grid;
@@ -753,9 +835,7 @@ p.body-sm {
     margin-top: 12px;
 }
 
-/* SLIDE 8  —  TEAM */
-
-/* Fixed square + object-fit keeps all four circles identical */
+/* ─── SLIDE 8  —  TEAM ─── */
 .team-img {
     width: 240px;
     height: 240px;
@@ -785,7 +865,7 @@ p.body-sm {
     font-family: var(--heading);
     font-size: .6rem;
     font-weight: 800;
-    color: var(--text-muted);
+    color: var(--gold-dark);
     letter-spacing: .15em;
     text-transform: uppercase;
     margin-bottom: 3px;
@@ -804,18 +884,18 @@ p.body-sm {
     height: 150px;
 }
 
-/* Read-more button hidden on desktop — shown only via mobile media query */
+/* Read-more button hidden on desktop */
 .read-more-btn {
     display: none;
 }
 
-/* SLIDE 2  —  PATHWAYCONNECT PREREQ NOTE */
+/* ─── SLIDE 2  —  PREREQ NOTE ─── */
 .prereq-note {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    background: rgba(243, 173, 57, .08);
-    border: 1px solid rgba(243, 173, 57, .25);
+    background: rgba(243,173,57,.08);
+    border: 1px solid rgba(243,173,57,.25);
     border-left: 3px solid var(--gold);
     border-radius: 4px;
     padding: 10px 14px;
@@ -847,7 +927,7 @@ p.body-sm {
     line-height: 1.5;
 }
 
-/* SLIDE 9  —  ELEVATED CTA */
+/* ─── SLIDE 9  —  CTA ─── */
 .cta-wide {
     max-width: 1200px;
     width: 100%;
@@ -863,24 +943,24 @@ p.body-sm {
 
 .journey-step {
     flex: 1;
-    background: rgba(255, 255, 255, .06);
-    border: 1px solid rgba(255, 255, 255, .12);
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
     border-radius: 6px;
     padding: 14px 16px;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    height: 200px;
+    min-height: 140px;
 }
 
 .journey-step.active {
-    background: rgba(243, 173, 57, .12);
-    border-color: rgba(243, 173, 57, .35);
+    background: rgba(243,173,57,.12);
+    border-color: rgba(243,173,57,.35);
 }
 
 .journey-step:hover {
-    background: rgba(255, 255, 255, .1);
-    border-color: rgba(255, 255, 255, .25);
+    background: rgba(255,255,255,.1);
+    border-color: rgba(255,255,255,.25);
 }
 
 .journey-num {
@@ -929,7 +1009,7 @@ p.body-sm {
 .cta-divider {
     width: 100%;
     height: 1px;
-    background: rgba(255, 255, 255, .1);
+    background: rgba(255,255,255,.1);
     margin: 20px 0;
 }
 
@@ -941,8 +1021,8 @@ p.body-sm {
 }
 
 .cta-card {
-    background: rgba(255, 255, 255, .06);
-    border: 1px solid rgba(255, 255, 255, .12);
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
     border-radius: 6px;
     padding: 16px;
     display: flex;
@@ -954,24 +1034,25 @@ p.body-sm {
 }
 
 .cta-card:hover {
-    background: rgba(255, 255, 255, .1);
-    border-color: rgba(201, 161, 58, .4);
+    background: rgba(255,255,255,.1);
+    border-color: rgba(201,161,58,.4);
 }
 
 .cta-card.primary {
-    border-color: rgba(201, 161, 58, .4);
-    background: rgba(201, 161, 58, .08);
+    border-color: rgba(201,161,58,.4);
+    background: rgba(201,161,58,.08);
 }
 
 .cta-card.primary:hover {
-    background: rgba(255, 255, 255, .1);
-    border-color: rgba(201, 161, 58, .4);
+    background: rgba(255,255,255,.1);
+    border-color: rgba(201,161,58,.4);
 }
 
 a.cta-links {
     text-decoration: none;
     color: inherit;
-} 
+}
+
 .cta-qr {
     width: 120px;
     height: 120px;
@@ -988,7 +1069,7 @@ a.cta-links {
     margin-bottom: 2px;
 }
 
-.cta-card-label  {
+.cta-card-label {
     font-family: var(--heading);
     font-size: 1.2rem;
     font-weight: 800;
@@ -1022,73 +1103,129 @@ a.cta-links {
     color: var(--gold);
 }
 
-/* Mobile — roadmap and CTAs stack */
-@media (max-width: 720px) {
-    .journey-roadmap {
-        flex-direction: column;
-        gap: 8px;
-    }
 
-    .journey-arrow {
-        transform: rotate(90deg);
-        padding: 4px 0;
-        justify-content: center;
-    }
-
-    .cta-options {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ................................................................................................................................................ */
-/* RESPONSIVE  —  ≤ 720 px */
+/* RESPONSIVE — 720 px (mobile) */
 @media (max-width: 720px) {
 
-    /* Collapse all multi-col grids to single column */
+    /* ── Header ── */
+    .brand-sub { display: none; }
+
+    .hbar-section {
+        font-size: .52rem;
+        max-width: 100px;
+        text-align: right;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* ── Body area: top-down flow, scrolls between sticky header & footer ── */
+    .body {
+        justify-content: flex-start;
+        padding: 20px 16px 16px;
+    }
+
+    /* ── Footer: shrink text, bigger tap targets ── */
+    .fbar {
+        height: auto;
+        min-height: 50px;
+        padding: 5px 12px;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .fbar-left {
+        font-size: .5rem;
+        flex: 1 1 100%;
+        display: none; /* hide long location text on mobile to save space */
+    }
+
+    .nav {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .nav button {
+        min-height: 32px;        /* Apple HIG minimum tap target */
+        min-width: 50px;
+        font-size: .72rem;
+        padding: 6px 14px;
+    }
+
+    .prog-wrap { width: 70px; }
+
+    /* ── Collapse all multi-col grids to single column ── */
     .g2,
     .g3,
     .two-col {
         grid-template-columns: 1fr;
     }
 
-    /* Slide 5 — career cards stack vertically on mobile */
+    /* ── Slide 5 — career cards stack ── */
     .career-container {
         grid-template-columns: 1fr;
         height: auto;
     }
 
-    /* Slide 6 — lab photo stacks */
+    /* ── Slide 6 — lab photo stacks and scrolls; fbar stays visible ── */
     .lab-slide {
-        grid-template-columns: 1fr;
+        display: block;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        flex: 1;
+        min-height: 0;
     }
 
     .lab-image-wrap {
-        height: 220px;
+        height: 200px;
+        width: 100%;
+    }
+
+    .lab-image-wrap {
+        height: 200px;
+        flex-shrink: 0;
     }
 
     .lab-img-overlay {
-        background: linear-gradient(to bottom, transparent 60%, var(--off-white) 100%);
+        background: linear-gradient(to bottom, transparent 50%, var(--off-white) 100%);
     }
 
-    /* Typography scale-down */
-    h1 { font-size: 1.8rem; }
-    h2 { font-size: 1.2rem; }
+    .lab-content {
+        padding: 20px 16px;
+        justify-content: flex-start;
+    }
 
-    /* Slide 8 — team images shrink on mobile */
+    /* ── Typography scale-down ── */
+    h1, .main-heading { font-size: 2rem; }
+    h2 { font-size: 1.15rem; }
+
+    .eyebrow { font-size: .72rem; letter-spacing: .15em; }
+    p.lead   { font-size: .88rem; margin-bottom: 12px; }
+
+    /* ── Slide 1 & 9 — closing section scrolls between sticky header & footer ── */
+    .closing {
+        padding: 28px 20px 24px;
+        justify-content: flex-start;
+        overflow-y: auto;           /* override base overflow:visible */
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        min-height: 0;              /* allow flex child to shrink and scroll */
+    }
+
+    .c-headline { font-size: 1.8rem; }
+
+    /* ── Slide 8 — team images shrink ── */
     .team-img {
-        width: 80px;
-        height: 80px;
+        width: 72px;
+        height: 72px;
         border-width: 2px;
     }
 
-    .card-content h3 { font-size: .95rem; }
-    .card-grid1 h3 { font-size: .95rem; }
-    .card-content    { gap: 8px; }
-    .role-title      { font-size: .55rem; }
+    .card-content h3  { font-size: .95rem; }
+    .card-content     { gap: 6px; }
+    .team p.body-sm   { font-size: .78rem; }
 
-    .team p.body-sm  { font-size: .75rem; }
-
-    /* Slide 8 — read more clamp */
+    /* Read-more clamp on mobile */
     .team .body-sm {
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -1115,19 +1252,51 @@ a.cta-links {
         letter-spacing: .06em;
         text-transform: uppercase;
         cursor: pointer;
+        min-height: 28px; /* tap-friendly */
     }
 
-    .lab-img-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, transparent 50%, var(--off-white) 100%);
+    /* ── Slide 9 — roadmap and CTAs stack ── */
+    .journey-roadmap {
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 4px;
     }
 
-    .lab-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 1vh 1vw 1vh 1vw;
-    background: var(--off-white);
+    .journey-step {
+        min-height: auto;
     }
+
+    .journey-arrow {
+        transform: rotate(90deg);
+        padding: 2px 0;
+        justify-content: center;
+    }
+
+    .cta-options {
+        grid-template-columns: 1fr;
+    }
+
+    .cta-qr {
+        width: 90px;
+        height: 90px;
+    }
+
+    .cta-card-label { font-size: .95rem; }
+    .cta-card-sub   { font-size: .78rem; }
+
+    .cta-eyebrow { margin-top: 1rem; }
+
+    /* ── Cards on mobile: stack image + content vertically ── */
+    .card {
+        flex-direction: column;
+        gap: .75rem;
+        padding: 14px;
+    }
+
+    /* ── Prereq note text size ── */
+    .prereq-text { font-size: .75rem; }
+
+    /* ── Pills wrap nicely ── */
+    .pills { gap: 5px; margin-top: 10px; }
+    .pill  { font-size: .58rem; padding: 4px 10px; }
 }
