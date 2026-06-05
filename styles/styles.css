@@ -212,7 +212,7 @@ body::before {
 .brand-text {
     font-family: var(--heading);
     font-weight: 700;
-    font-size: .72rem;
+    font-size: 0.875rem;
     color: var(--white);
     letter-spacing: .07em;
     text-transform: uppercase;
@@ -220,9 +220,9 @@ body::before {
 
 .brand-sub {
     font-family: var(--heading);
-    font-size: .55rem;
+    font-size: .6rem;
     font-weight: 500;
-    color: rgba(201,161,58,.8);
+    color: var(--gold);
     letter-spacing: .1em;
     text-transform: uppercase;
     display: block;
@@ -231,9 +231,9 @@ body::before {
 
 .brand-sub2 {
     font-family: var(--heading);
-    font-size: .55rem;
+    font-size: .6rem;
     font-weight: 500;
-    color: rgba(201,161,58,.8);
+    color: var(--gold);
     letter-spacing: .1em;
     text-transform: uppercase;
     display: none;
@@ -242,7 +242,7 @@ body::before {
 
 .hbar-section {
     font-family: var(--heading);
-    font-size: .6rem;
+    font-size: .8rem;
     font-weight: 600;
     color: rgba(255,255,255,.55);
     letter-spacing: .13em;
@@ -1197,7 +1197,7 @@ a.cta-links {
     .fbar-left {
         font-size: .5rem;
         flex: 1 1 100%;
-        display: none; /* hide long location text on mobile to save space */
+        display: none; 
     }
 
     .nav {
